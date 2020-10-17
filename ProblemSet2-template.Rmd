@@ -40,7 +40,12 @@ gss_data <-  select(gss, feelings_life, marital_status, education, average_hours
 group_by(gss_data, self_rated_health) %>% summarise()
 lm(gss_data$feelings_life ~ gss_data$marital_status) %>% summary()
 
-
+health_numeric <- case_when(gss_data$self_rated_health=="Excellent" ~ 5,
+          gss_data$self_rated_health=="Very good" ~ 4,
+          gss_data$self_rated_health=="Good" ~ 3,
+          gss_data$self_rated_health=="Fair" ~ 2,
+          gss_data$self_rated_health=="Poor" ~ 1
+          )
 ```
 Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.
 
