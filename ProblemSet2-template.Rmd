@@ -34,9 +34,9 @@ We are interested in the relationship between feeling of life and marriage statu
 
 ## Data
 ```{r}
-gss_data <- read_csv("gss.csv") %>%
-  select(feelings_life, marital_status, education, average_hours_worked, self_rated_health, income_family, income_respondent)
-  group_by(gss, self_rated_health) %>% summarise()
+gss <- read_csv("gss.csv")
+gss_data <-  select(gss, feelings_life, marital_status, education, average_hours_worked, self_rated_health, income_family, income_respondent)
+group_by(gss_data, self_rated_health) %>% summarise()
 ```
 Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.
 
