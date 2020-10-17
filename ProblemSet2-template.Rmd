@@ -26,7 +26,7 @@ Here is where you should give insight into the setting and introduce the goal of
 
 We are interested in the relationship between feeling of life and marriage status, education, respondant income, family income, self rated health, and average hours workd 
 
-Benefit of Bayesian is 
+Benefit of Bayesian is that the Bayesion gives a more compact confidence interval (reference).
 
 $$ 1) Income respondent (ttlincg2)  VS  Education (ehg3_01b).    2) Income respondent (ttlincg2) VS  Feelings about life as a whole (slm_01). 
    3) Dwelling type of the respondent (dwelc) VS Income respondent (ttlincg2)  4)  partner_education = (eop_200)  VS   income_family = (famincg2)
