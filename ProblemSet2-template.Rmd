@@ -24,6 +24,10 @@ Here is where you give a brief (one paragraph overview of your entire paper). Th
 
 Here is where you should give insight into the setting and introduce the goal of the analysis. Here you can introduce ideas and basic concepts regarding the study setting and the potential model. Again, this is the introduction, so you should be explaining the importance of the work that is ahead and hopefully build some suspense for the reader. You can also highlight what will be included in the subsequent sections.
 
+We are interested in the relationship between feeling of life and marriage status, education, respondant income, family income, self rated health, and average hours workd 
+
+Benefit of Bayesian is 
+
 $$ 1) Income respondent (ttlincg2)  VS  Education (ehg3_01b).    2) Income respondent (ttlincg2) VS  Feelings about life as a whole (slm_01). 
    3) Dwelling type of the respondent (dwelc) VS Income respondent (ttlincg2)  4)  partner_education = (eop_200)  VS   income_family = (famincg2)
    5) Feelings about life as a whole (slm_01) VS   occupation = (noc1610)
