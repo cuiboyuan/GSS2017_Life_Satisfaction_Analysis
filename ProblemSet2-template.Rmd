@@ -7,6 +7,8 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
 ```
 
 ## Title of your Report
@@ -23,7 +25,9 @@ Here is where you give a brief (one paragraph overview of your entire paper). Th
 Here is where you should give insight into the setting and introduce the goal of the analysis. Here you can introduce ideas and basic concepts regarding the study setting and the potential model. Again, this is the introduction, so you should be explaining the importance of the work that is ahead and hopefully build some suspense for the reader. You can also highlight what will be included in the subsequent sections.
 
 ## Data
-
+```{r}
+gss <- read_csv("gss.csv")
+```
 Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.
 
 ## Model
