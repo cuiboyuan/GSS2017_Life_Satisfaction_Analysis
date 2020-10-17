@@ -26,7 +26,7 @@ Here is where you should give insight into the setting and introduce the goal of
 
 We are interested in the relationship between feeling of life and marriage status, education, respondant income, family income, self rated health, and average hours workd 
 
-Benefit of Bayesian is that the Bayesion gives a more compact confidence interval (reference).
+
 
 $$ 1) Income respondent (ttlincg2)  VS  Education (ehg3_01b).    2) Income respondent (ttlincg2) VS  Feelings about life as a whole (slm_01). 
    3) Dwelling type of the respondent (dwelc) VS Income respondent (ttlincg2)  4)  partner_education = (eop_200)  VS   income_family = (famincg2)
@@ -39,6 +39,8 @@ gss <- read_csv("gss.csv")
 Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.
 
 ## Model
+
+We will use a Bayesian linear regression model. The reason is that Bayesion gives a more compact confidence interval and the simple linear model does (reference).
 
 Introduce the selected model here. It is expected that you will use some mathematical notation here. If you do please ensure that all notation is explained. You may also want to discuss any special (hypothetical) cases of your model here, as well as any caveats.  
 
