@@ -28,7 +28,7 @@ We are interested in the relationship between feeling of life and marriage statu
 
 
 
-$$ 1) Income respondent (ttlincg2)  VS  Education (ehg3_01b).    2) Income respondent (ttlincg2) VS  Feelings about life as a whole (slm_01). 
+ 1) Income respondent (ttlincg2)  VS  Education (ehg3_01b).    2) Income respondent (ttlincg2) VS  Feelings about life as a whole (slm_01). 
    3) Dwelling type of the respondent (dwelc) VS Income respondent (ttlincg2)  4)  partner_education = (eop_200)  VS   income_family = (famincg2)
    5) Feelings about life as a whole (slm_01) VS   occupation = (noc1610)
 
