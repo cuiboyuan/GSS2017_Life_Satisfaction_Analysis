@@ -1,6 +1,6 @@
 ---
 title: "Title of Your Report"
-author: "Names of your Group Members"
+author: "Boyuan Cui, Zhaocheng Li"
 date: "Due Date"
 output: pdf_document
 ---
