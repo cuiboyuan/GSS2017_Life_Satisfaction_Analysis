@@ -60,6 +60,22 @@ Incomefam_numeric = case_when(gss_data$ income_family=="$125,000 and more" ~ 6,
                               gss_data$ income_family=="$50,000 to $74,999" ~ 3,
                               gss_data$ income_family=="$25,000 to $49,999" ~ 2,
                               gss_data$ income_family=="Less than $25,000" ~ 1)
+                              
+IncomeRes_numeric <- case_when(gss_data$income_respondent=="$125,000 and more" ~ 6,
+          gss_data$income_respondent=="$100,000 to $ 124,999" ~ 5,
+          gss_data$income_respondent=="$75,000 to $99,999" ~ 4,
+          gss_data$income_respondent=="$50,000 to $74,999" ~ 3,
+          gss_data$income_respondent=="$25,000 to $49,999" ~ 2,
+          gss_data$income_respondent=="Less than $25,000" ~ 1
+          )
+edu <- case_when(gss_data$education=="University certificate, diploma or degree above the bach..." ~ 7,
+          gss_data$education=="Bachelor's degree (e.g. B.A., B.Sc., LL.B.)" ~ 6,
+          gss_data$education=="University certificate or diploma below the bachelor's level" ~ 5,
+          gss_data$education=="College, CEGEP or other non-university certificate or di..." ~ 4,
+          gss_data$education=="Trade certificate or diploma" ~ 3,
+          gss_data$education=="High school diploma or a high school equivalency certificate" ~ 2,
+          gss_data$education=="Less than high school diploma or its equivalent" ~ 1
+          )
 ```
 Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.
 
