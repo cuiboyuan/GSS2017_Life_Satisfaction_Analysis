@@ -50,6 +50,6 @@ Here you discuss subsequent work to be done after this report. This can include 
 
 
 ## References
-
+ Statistics Canada, year of publication, name of product, catalogue number, volume and issue numbers, reference period and page(s).
 
 
