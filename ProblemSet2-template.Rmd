@@ -51,7 +51,7 @@ health_numeric <- case_when(gss_data$self_rated_health=="Excellent" ~ 5,
 work_hours_numeric = case_when(gss_data$ average_hours_worked=="50.1 hours and more" ~ 5,
                                gss_data$ average_hours_worked=="40.1 to 50.0 hours" ~ 4,
                                gss_data$ average_hours_worked=="30.0 to 40.0 hours" ~ 3,
-                               gss_data$ average_hours_worked=="0.1 to 29.9 hours	" ~ 2,
+                               gss_data$ average_hours_worked=="0.1 to 29.9 hours" ~ 2,
                                gss_data$ average_hours_worked=="0 hour" ~ 1)
 
 Incomefam_numeric = case_when(gss_data$ income_family=="$125,000 and more" ~ 6,
