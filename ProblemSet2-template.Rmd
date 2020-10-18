@@ -10,38 +10,30 @@ knitr::opts_chunk$set(echo = FALSE)
 
 library(tidyverse)
 library(brms)
+library(knitr)
 ```
 
-## Title of your Report
-
-# Name(s) of Author(s) 
-# Date
 
 ## Abstract
 
-Here is where you give a brief (one paragraph overview of your entire paper). This should include some background/introduction, some methodology, results and conclusions.
+(Here is where you give a brief (one paragraph overview of your entire paper). This should include some background/introduction, some methodology, results and conclusions.)
 
 ## Introduction
 
-Here is where you should give insight into the setting and introduce the goal of the analysis. Here you can introduce ideas and basic concepts regarding the study setting and the potential model. Again, this is the introduction, so you should be explaining the importance of the work that is ahead and hopefully build some suspense for the reader. You can also highlight what will be included in the subsequent sections.
+(Here is where you should give insight into the setting and introduce the goal of the analysis. Here you can introduce ideas and basic concepts regarding the study setting and the potential model. Again, this is the introduction, so you should be explaining the importance of the work that is ahead and hopefully build some suspense for the reader. You can also highlight what will be included in the subsequent sections.)
 
 Starting from 1985, Statistics Canada conducted General Social Survey (GSS) every year to collect cross-sectional data on non-institutionalized Canadian citizens over 15 years old to address and discover new  social issues. One of the primary objective of GSS is to monitor factors that affect Canadians' well-beings of that specific year (reference to user guide). We believe that an important indicator of a person's well-being is his/her own attitude towards life. If we are aware of what aspects promote or damage one's feeling of life, the government and any social agencies will have better insights on what they should do to make the society better off. We believe it is important to know which factors are influential on people's feeling of life as a whole, and we may find some unexpected discoveries.
 
 The following sections will specifically explore the impact of marital status, education level, individual income, self rated health, and average working hours on one's feeling of life, and we will apply a Bayesian linear model to analyze the relationship.
 
 
- 1) Income respondent (ttlincg2)  VS  Education (ehg3_01b).    2) Income respondent (ttlincg2) VS  Feelings about life as a whole (slm_01). 
-   3) Dwelling type of the respondent (dwelc) VS Income respondent (ttlincg2)  4)  partner_education = (eop_200)  VS   income_family = (famincg2)
-   5) Feelings about life as a whole (slm_01) VS   occupation = (noc1610)
-
 ## Data
 
-Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.
-```{r, echo=FALSE}
+(Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.)
+```{r, echo=FALSE, include=FALSE}
 gss <- read_csv("gss.csv")
 gss_data <-  select(gss, feelings_life, marital_status, education, average_hours_worked, self_rated_health, income_respondent) %>% na.omit()
 
-group_by(gss_data, education) %>% summarise()
 
 health_numeric <- case_when(gss_data$self_rated_health=="Excellent" ~ 5,
           gss_data$self_rated_health=="Very good" ~ 4,
@@ -77,105 +69,124 @@ edu = case_when(gss_data$education=="University certificate, diploma or degree a
 
 gss_numeric = data.frame(feelings_life = gss_data$feelings_life, marriage = factor(gss_data$marital_status), education=edu, health=health_numeric, income_respondent=IncomeRes_numeric,
                          work_hours=work_hours_numeric) %>% na.omit()
+gss_numeric = within(gss_numeric, marriage <- relevel(marriage, ref = 5)) # make Single marital status as reference
 
 ```
 
 
 ### Data Extraction
 
-We first obtain the GSS data from the CHASS website ('AAIpsmGG.csv'), and clean the file with code from 'gss_cleaning.R' (written by professor Rohan Alexander and Sam Caetano) to make the raw data more interpreteble. The data file after cleaning is 'gss.csv'
+We first obtain the GSS data file from the CHASS website ('AAIpsmGG.csv'), and clean the data with code from 'gss_cleaning.R' (written by professor Rohan Alexander and Sam Caetano) to make the raw data more interpreteble. The data file after cleaning is 'gss.csv'
 
 Then, we select our interest variables--marital status, education level, individual income, family income, self rated health, average working hours, and one's feeling of life--from the cleaned data, and we remove every case with NA or "Don't know" responses from the dataset. For the convenience of modelling, we will convert some categorical data to numeric variables. We will briefly explain each variable in the following section.
 
+Below is an overview of the final dataset:
+```{r, echo=FALSE}
+head(gss_numeric) %>% tibble() %>% kable(align = 'lccrr')
+```
+
 ### Variable Explanations
+
 
 #### Response Variable
 
 
-__Feeling of life__ (code in raw data:SLM_01, name in 'gss.csv':feelings_life) is a continuous numeric data ranging from 0 to 10 that indicates the respondent's feeling of life as a whole. 0 means very dissatisfied and 10 means very satisfied (reference from data).
+__Feeling of life__ (code in raw data: SLM_01, name in 'gss.csv': feelings_life) is a continuous numeric data ranging from 0 to 10 that indicates the respondent's feeling of life as a whole. 0 means very dissatisfied and 10 means very satisfied (reference from data).
+
 
 #### Explanatory Variables
 
 
-__Marital status__ (code in raw data:MARSTAT, name in 'gss.csv':marital_status) is a categorical data indicating whether the respondent is divorced, living common-law, married, separated, single, or widowed.
+__Marital status__ (code in raw data: MARSTAT, name in 'gss.csv': marital_status) is a categorical data indicating whether the respondent is divorced, living common-law, married, separated, single, or widowed.
 
 We will not convert this data to numeric, since it is not intuitive to differentiate marital status into different levels. It is not reasonable to say that married is better than single, or vice versa, so we will leave this variable as categorical. But for concision purpose, we will give each marital status a code number for future reference:
 
 ```{r, echo=FALSE}
-tibble('Marital status'=levels(gss_numeric$marriage),'Reference Code'=c(1:6))
+tibble('Marital status'=levels(gss_numeric$marriage),'Reference Code'=c(1:6)) %>% kable(align = 'lccrr')
 ```
 
-__Education level__ (code in raw data:EHG3_01B, name in 'gss.csv':education) is a categorical data that indicates the highest education the respondent acquires. Because the question asks for the highest education level achieved, it is reasonable to use numeric data to represent different levels of education. The variable after transformation will range from 1-7, representing from the lowest to the highest education level (we use the order of education level from the original GSS). Below is a reference table:
+__Education level__ (code in raw data: EHG3_01B, name in 'gss.csv': education) is a categorical data that indicates the highest education the respondent acquires. Because the question asks for the highest education level achieved, it is reasonable to use numeric data to represent different levels of education. The variable after transformation will range from 1-7, representing from the lowest to the highest education level (we use the order of education level from the original GSS). Below is a reference table:
 ```{r, echo=FALSE}
 edu_name = c("Less than high school diploma or its equivalent","High school diploma or a high school equivalency certificate","Trade certificate or diploma","College, CEGEP or other non-university certificate or diploma (other than trades certificates or diplomas)","University certificate or diploma below the bachelor's level","Bachelor's degree (e.g. B.A., B.Sc., LL.B.)","University certificate, diploma or degree above the bachelor’s level")
 rank = group_by(gss_numeric, education) %>% summarise(.groups = 'drop')
 rank = rank$education
-tibble(`Education Level`=edu_name, `Numeric Rank`=rank)
+tibble(`Education Level`=edu_name, `Numeric Rank`=rank) %>% kable(align = 'lccrr')
 ```
 
 
-__Individual income__ (code in raw data:TTLINCG2, name in 'gss.csv':income_respondent) is a categorical data that indicates the income level of respondent before tax and excluding any capital gains or losses. Income is inherently a numeric data, so we will transform these two variables to numeric data ranging from 1 to 7 which represent the income level. Below is a reference table:
+__Individual income__ (code in raw data: TTLINCG2, name in 'gss.csv': income_respondent) is a categorical data that indicates the income level of respondent before tax and excluding any capital gains or losses. Income is inherently a numeric data, so we will transform these two variables to numeric data ranging from 1 to 7 which represent the income level. Below is a reference table:
 ```{r, echo=FALSE}
 inc_name = c("Less than $25,000","$25,000 to $49,999","$50,000 to $74,999","$75,000 to $99,999","$100,000 to $ 124,999","$125,000 and more")
 rank = group_by(gss_numeric, income_respondent) %>% summarise(.groups = 'drop')
 rank = rank$income_respondent
-tibble(`Income Level`=inc_name, `Numeric Level`=rank)
+tibble(`Income Level`=inc_name, `Numeric Level`=rank) %>% kable(align = 'lccrr')
 ```
 
 
-__Self rated health__ (code in raw data:SRH_110, name in 'gss.csv':self_rated_health) is a categorical data that indicates what the respondent think his/her health level is. We will also transform this variable to numeric data with range from 1-5. Below is the reference table:
+__Self rated health__ (code in raw data: SRH_110, name in 'gss.csv': self_rated_health) is a categorical data that indicates what the respondent think his/her health level is. We will also transform this variable to numeric data with range from 1-5. Below is the reference table:
 ```{r, echo=FALSE}
 health_name = c("Poor","Fair","Good","Very good","Execellent")
 rank = group_by(gss_numeric, health) %>% summarise(.groups = 'drop')
 rank = rank$health
-tibble(`Self Rated Health Level`=health_name, `Numeric Level`=rank)
+tibble(`Self Rated Health Level`=health_name, `Numeric Level`=rank) %>% kable(align = 'lccrr')
 ```
 
 
-__Average working hours__ (code in raw data:UHW_16GR, name in 'gss.csv':average_hours_worked) is a categorical data that indicates how many hours the respondent works a week on average. We will convert the variable to numeric with range from 1-5. Below is the reference table:
+__Average working hours__ (code in raw data: UHW_16GR, name in 'gss.csv': average_hours_worked) is a categorical data that indicates how many hours the respondent works a week on average. We will convert the variable to numeric with range from 1-5. Below is the reference table:
 ```{r, echo=FALSE}
 hrs_name = c("0 hour","0.1 to 29.9 hours","30.0 to 40.0 hours","40.1 to 50.0 hours","50.1 hours and more")
 rank = group_by(gss_numeric, work_hours) %>% summarise(.groups = 'drop')
 rank = rank$work_hours
-tibble(`Self Work Hour Level`=hrs_name, `Numeric Level`=rank)
+tibble(`Self Work Hour Level`=hrs_name, `Numeric Level`=rank) %>% kable(align = 'lccrr')
 
 ```
+
+#### Potential Drawback
+
+For the health variable, we use the self rated health from GSS, but this does not necessarily represent the actual health condition of respondent. The respondent himself/herself might not be a physician and could have wrong understanding of his/her actual health condition.
 
 
 #### Why do we choose these variables?
 
 ## Model
 ```{r, echo=FALSE, include=FALSE}
-contrasts(gss_numeric$marriage) <- contr.treatment(6,base = 5) # set Single as the reference
-model <- brm(formula = feelings_life ~ marriage + education + health + income_respondent + work_hours,
-             data = gss_numeric,
-             seed = 84)
+model <- brm(formula = feelings_life ~ marriage + education + health + income_respondent + work_hours, data = gss_numeric, seed = 84)
 ```
 
 
-```{r, echo=FALSE}
-summary(model)
-```
+We will use a Bayesian linear model.
+In other words, we are trying to find a linear formula that describes the relationship between our explanatory variables and the response variable:
 
-We will use a Bayesian linear regression model. The reason is that Bayesian gives a more compact confidence interval and the simple linear model does (reference).
+$Y_{feeling}=\beta_0+\beta_1\cdot I_{divorced}+\beta_2\cdot I_{CommonLaw} + \beta_3\cdot I_{married} + \beta_4\cdot I_{separated} + \beta_5\cdot I_{widowed} + \beta_6\cdot X_{education} + \beta_7\cdot X_{health} + \beta_8\cdot X_{income} + \beta_9\cdot X_{hours}$
+
+where, 
+
+$\begin{aligned}&Y_{feeling} \text{ is the model's predicted feeling of life as a whole}\\\\&I_i \text{ represents an indicator variable of marital status that can only take value of 0 or 1}\\&\text{For }I_{divorced} \text{, 1 means the person is divorced and 0 means not.}\\&\text{For }I_{CommonLaw} \text{, 1 means the person is living in common law and 0 means not.}\\&\text{For }I_{married} \text{, 1 means the person is married and 0 means not.}\\&\text{For }I_{separated} \text{, 1 means the person is separated and 0 means not.}\\&\text{For }I_{widowed} \text{, 1 means the person is widowed and 0 means not.}\\\\&X_{education} \text{ is a variable with range from 1 to 7, indicating the education level.}\\&X_{health} \text{ is a variable with range from 1 to 5, indicating the self rated health level.}\\&X_{income} \text{ is a variable with range from 1 to 6, indicating the respondent income level.}\\&X_{hours} \text{ is a variable with range from 1 to 5, indicating the average weekily working hour level.}\\\end{aligned}$
+
+For the model to make sense, if one marital status indicator variable $I_i$ is 1, all other $I_i$ should be 0. The variable $I_{single}$ for Single is missing because we use it as a reference variable. In other words, the coefficient $\beta_1$ of $I_{divorced}$ represents how much the respondent's feeling of life as a whole will change, comparing to being Single, if the respondent is divorced, and the same applies to other $I_i$.
+
+We will find $\beta$s that give the best fitted model.
+
+We will assume that all these variables are independent. The difference between a simple linear regression model and a Bayesian one is that, in Bayesian approach, we see the parameters (i.e. $\beta$s) as random variables instead of fixed constant, and the probability distribution of $\beta$s is called a prior distribution. The objective of Bayesian is to find the conditional distribution of $\beta$ given the sample data (i.e. the ), called posterior distribution. By Bayes' rule, the posterior distribution equals to the product of likelihood, which is the joint density distribution of all explanatory variables, and prior. To calculate likelihood, we will just multiply the density distribution of all variables since we assume all variables are independent.
+
+The reason is that Bayesian gives a more compact confidence interval than the simple linear model does (reference).
 
 Population-Level Effects: 
-                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept             5.73      0.08     5.58     5.88 1.00     6905     3241
-marriage1             0.16      0.05     0.06     0.26 1.00     4634     3340
-marriage2             0.52      0.04     0.43     0.60 1.00     4635     3196
-marriage3             0.73      0.03     0.67     0.79 1.00     4095     3473
-marriage4            -0.10      0.07    -0.25     0.04 1.00     5385     2927
-marriage6             0.01      0.09    -0.16     0.18 1.00     6403     3262
-education            -0.06      0.01    -0.07    -0.04 1.00     7646     3334
-health                0.54      0.01     0.52     0.57 1.00     8710     3065
-income_respondent     0.04      0.01     0.02     0.06 1.00     6006     2952
-work_hours            0.02      0.02    -0.01     0.05 1.00     6828     3298
+                         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept                    5.73      0.08     5.58     5.88 1.00     6905     3241
+marriageDivorced             0.16      0.05     0.06     0.26 1.00     4634     3340
+marriageLivingcommonMlaw     0.52      0.04     0.43     0.60 1.00     4635     3196
+marriageMarried              0.73      0.03     0.67     0.79 1.00     4095     3473
+marriageSeparated           -0.10      0.07    -0.25     0.04 1.00     5385     2927
+marriageWidowed              0.01      0.09    -0.16     0.18 1.00     6403     3262
+education                   -0.06      0.01    -0.07    -0.04 1.00     7646     3334
+health                       0.54      0.01     0.52     0.57 1.00     8710     3065
+income_respondent            0.04      0.01     0.02     0.06 1.00     6006     2952
+work_hours                   0.02      0.02    -0.01     0.05 1.00     6828     3298
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
 sigma     1.39      0.01     1.37     1.40 1.00     9193     2954
-
 
 Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -202,46 +213,88 @@ Introduce the selected model here. It is expected that you will use some mathema
 
 ## Results
 
-```{r, echo=FALSE}
-hist(gss_numeric$feelings_life)
-```
+Below is a histogram that gives a brief overview of Canadians' feelings of life as a whole in 2017:
 
 ```{r, echo=FALSE}
-ggplot(gss_numeric, aes(x=health, y=feelings_life)) + geom_point()
-
-ggplot(gss_numeric, aes(x=education, group=education, y=feelings_life)) + geom_boxplot()
-
-ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot()
-
-ggplot(gss_numeric, aes(x=income_respondent, group=income_respondent, y=feelings_life)) + geom_boxplot()
-
-
-
-ggplot(gss_numeric, aes(x=work_hours, group=work_hours, y=feelings_life)) + geom_boxplot()
-
-ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_boxplot()
+hist(gss_numeric$feelings_life, xlab = 'Feelings of life', main = 'Figure 1')
 
 ```
 
-Here you will include all results. This includes descriptive statistics, graphs, figures, tables, and model results. Please ensure that everything is well formatted and in a report style. You must also provide an explanation of the results in this section. You can overflow to an Appendix if needed. 
+The distribution in Figure 1 is left skewed with a mean of 8.13, so we can say that the overall well-being of Canada in 2017 is quite good.
 
-Please ensure that everything is well labelled. So if you have multiple histograms and plots, calling them Figure 1, 2, 3, etc. and referencing them as Figure 1, Figure 2, etc. in your report will be expected. The reader should not get lost in a sea of information. Make sure to have the results be clean, well formatted and digestible.
+
+```{r, echo=FALSE}
+ggplot(gss_numeric, aes(x=education, group=education, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Education Level")
+```
+
+Above is a boxplot of education level versus feeling of life. It is not obvious to see whether there is a relationship; we will need the linear model to check the correlations.
+
+
+```{r}
+ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Self Rated Health Level")
+```
+
+Above is a boxplot of self rated level versus feeling of life. We can see that there is positive correlation between self rated health and feeling of life, but we still need the model to verify this.
+
+
+```{r}
+ggplot(gss_numeric, aes(x=income_respondent, group=income_respondent, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Individual Income Level")
+```
+
+Above is a boxplot of respondent income versus feeling of life. Just by looking at the graph, we cannot see a relationship between these 2 variables.
+
+
+```{r}
+ggplot(gss_numeric, aes(x=work_hours, group=work_hours, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Average Weekly Working Hour Level")
+```
+
+Above is a boxplot of weekly average working hours versus feeling of life. Just through the plot, we might propose that longer work hours is correlated with more satisfied feeling of life; we will need the model to verify this.
+
+
+```{r}
+ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Marital Status")
+```
+
+Above is a boxplot of marital status versus feeling of life. Just by looking at the graph, we cannot clearly see a relationship between these 2 variables.
+
+
+
+
+```{r, echo=FALSE}
+summary(model)
+```
+
+
+(Here you will include all results. This includes descriptive statistics, graphs, figures, tables, and model results. Please ensure that everything is well formatted and in a report style. You must also provide an explanation of the results in this section. You can overflow to an Appendix if needed. 
+
+Please ensure that everything is well labelled. So if you have multiple histograms and plots, calling them Figure 1, 2, 3, etc. and referencing them as Figure 1, Figure 2, etc. in your report will be expected. The reader should not get lost in a sea of information. Make sure to have the results be clean, well formatted and digestible.)
 
 
 ## Discussion
 
-Here you will discuss conclusions drawn from the results and comment on how it relates to the original goal of the study (which was specified in the Introduction).
+(Here you will discuss conclusions drawn from the results and comment on how it relates to the original goal of the study (which was specified in the Introduction).)
+
+As we can see from our model, a good health condition greatly promotes personal well-beings in Canada, and it has greater positive impact on well-beings than the individual income has. This result implies that in order to increase the happiness of the society, the government should focus more on public health policies and personal medical support, etc.
+
+Additionally, from the model, we find out that getting married and living common-law also contributes largely to Canadian's feeling of life. This is intuitive since we expect people to be happier when they are in a relationship. This result may imply that the government should improve the common law or simplify the process of marriage registration.
+
+We also discover from the model that higher education level has a tiny negative impact on people's feeling of life. A possible explanation is that as people obtain more knowledge, they might worried about more things. For example, a construction worker may feel very satisfied with his/her job while an economic professor is constantly worrying about an upcoming recession. This does not necessarily mean that government should discourage people from increasing their education level. In fact, a higher education level might relate to a higher income, and by our model, income has a positive influence on the well-being.
+
+One interesting discovery is that, comparing to single respondents, divorced people have a more positive feeling of life. Intuitively, we often relate divorce to grief and distress, but the data from GSS tells a different story. Based on this result, the government may need to change its view on divorce, and consider to modify terms in the marriage laws to address this social issue.
 
 # Weaknesses
 
-Here we discuss weaknesses of the study, data, analysis, etc. You can also discuss areas for improvement.
+When we fit our model, we assume that all variables are independent, but that is not necessarily true. The education level and income may have relations because a good education background possibly helps people to get a high-waged job. Average work hours could also relate to health since if a person works a lot, his/her health condition could be affected.
+
 
 # Next Steps
 
-Here you discuss subsequent work to be done after this report. This can include next steps in terms of statistical analysis (perhaps there is a more efficient algorithm available, or perhaps there is a caveat in the data that would allow for some new technique). Future steps should also be specified in terms of the study setting (eg. including a follow-up survey on something, or a subsequent study that would complement the conclusions of your report).
+(Here you discuss subsequent work to be done after this report. This can include next steps in terms of statistical analysis (perhaps there is a more efficient algorithm available, or perhaps there is a caveat in the data that would allow for some new technique). Future steps should also be specified in terms of the study setting (eg. including a follow-up survey on something, or a subsequent study that would complement the conclusions of your report).)
+
+We could further investigate why divorce has a positive impact on people's feeling of life, and it may require another linear model to discover potential reasons.
 
 
 ## References
- Statistics Canada, year of publication, name of product, catalogue number, volume and issue numbers, reference period and page(s).
+[1] Statistics Canada, 2017, General Social Survey on Family (Cycle 31).
 
 
