@@ -80,9 +80,8 @@ edu = case_when(gss_data$education=="University certificate, diploma or degree a
           gss_data$education=="Less than high school diploma or its equivalent" ~ 1
           )
 
-gss_numeric = data.frame(feelings_life = gss_data$feelings_life, marriage = gss_data$marital_status, education=edu, health=health_numeric, income_respondent=IncomeRes_numeric,
+gss_numeric = data.frame(feelings_life = gss_data$feelings_life, marriage = factor(gss_data$marital_status), education=edu, health=health_numeric, income_respondent=IncomeRes_numeric,
                          income_family=Incomefam_numeric, work_hours=work_hours_numeric) %>% na.omit()
-
 
 ```
 
@@ -103,12 +102,16 @@ __Feeling of life__ (code in raw data:SLM_01, name in 'gss.csv':feelings_life) i
 #### Explanatory Variables
 
 
-__Marital status__ (code in raw data:MARSTAT, name in 'gss.csv':marital_status) is a categorical data indicating whether the respondent is:
+__Marital status__ (code in raw data:MARSTAT, name in 'gss.csv':marital_status) is a categorical data indicating whether the respondent is divorced
 ```{r, echo=FALSE}
 group_by(gss_numeric, marriage) %>% summarise(.groups = 'drop') %>%tibble()
 ```
 
-We will not convert this data to numeric, since it is not intuitive to separate marital status into different levels. It is not reasonable to say that married is better than single, so we will leave this variable as categorical.
+We will not convert this data to numeric, since it is not intuitive to separate marital status into different levels. It is not reasonable to say that married is better than single, so we will leave this variable as categorical. But for concision purpose, we will give each marital status a code number for future reference:
+
+```{r, echo=FALSE}
+tibble('Marital status'=levels(gss_numeric$marriage),'Reference Code'=c(1:6))
+```
 
 __Education level__ (code in raw data:EHG3_01B, name in 'gss.csv':education) is a categorical data that indicates the highest education the respondent acquires. Because the question asks for the highest education level achieved, it is reasonable to use numeric data to represent different levels of education. The variable after transformation will range from 1-7, representing from the lowest to the highest education level (we use the order of education level from the original GSS). Below is a reference table:
 ```{r, echo=FALSE}
@@ -151,7 +154,7 @@ tibble(`Self Work Hour Level`=hrs_name, `Numeric Level`=rank)
 
 ## Model
 ```{r, echo=FALSE}
-constrasts
+contrasts(gss_numeric$marriage) <- contr.treatment(6,base = 5)
 model <- brm(formula = feelings_life ~ marriage + education + health + income_respondent + income_family + work_hours,
              data = gss_numeric,
              seed = 84)
