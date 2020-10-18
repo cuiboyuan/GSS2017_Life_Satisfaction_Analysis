@@ -102,12 +102,9 @@ __Feeling of life__ (code in raw data:SLM_01, name in 'gss.csv':feelings_life) i
 #### Explanatory Variables
 
 
-__Marital status__ (code in raw data:MARSTAT, name in 'gss.csv':marital_status) is a categorical data indicating whether the respondent is divorced
-```{r, echo=FALSE}
-group_by(gss_numeric, marriage) %>% summarise(.groups = 'drop') %>%tibble()
-```
+__Marital status__ (code in raw data:MARSTAT, name in 'gss.csv':marital_status) is a categorical data indicating whether the respondent is divorced, living common-law, married, separated, single, or widowed.
 
-We will not convert this data to numeric, since it is not intuitive to separate marital status into different levels. It is not reasonable to say that married is better than single, so we will leave this variable as categorical. But for concision purpose, we will give each marital status a code number for future reference:
+We will not convert this data to numeric, since it is not intuitive to differentiate marital status into different levels. It is not reasonable to say that married is better than single, or vice versa, so we will leave this variable as categorical. But for concision purpose, we will give each marital status a code number for future reference:
 
 ```{r, echo=FALSE}
 tibble('Marital status'=levels(gss_numeric$marriage),'Reference Code'=c(1:6))
@@ -122,7 +119,7 @@ tibble(`Education Level`=edu_name, `Numeric Rank`=rank)
 ```
 
 
-__Individual income__ (code in raw data:TTLINCG2, name in 'gss.csv':income_respondent) and __family income__ (code in raw data:FAMINCG2, name in 'gss.csv':income_family) are both categorical data. Individual income indicates the income level of respondent, while family income indicates the total income of respondent's family. Both incomes are before tax and exclude any capital gains or losses. Income is inherently a numeric data, so we will transform these two variables to numeric data ranging from 1 to 7 which represent the income level. Below is a reference table shared by both family and respondent income:
+__Individual income__ (code in raw data:TTLINCG2, name in 'gss.csv':income_respondent) is a categorical data that indicates the income level of respondent before tax and excluding any capital gains or losses. Income is inherently a numeric data, so we will transform these two variables to numeric data ranging from 1 to 7 which represent the income level. Below is a reference table:
 ```{r, echo=FALSE}
 inc_name = c("Less than $25,000","$25,000 to $49,999","$50,000 to $74,999","$75,000 to $99,999","$100,000 to $ 124,999","$125,000 and more")
 rank = group_by(gss_numeric, income_respondent) %>% summarise(.groups = 'drop')
@@ -153,15 +150,40 @@ tibble(`Self Work Hour Level`=hrs_name, `Numeric Level`=rank)
 
 
 ## Model
-```{r, echo=FALSE}
-contrasts(gss_numeric$marriage) <- contr.treatment(6,base = 5)
-model <- brm(formula = feelings_life ~ marriage + education + health + income_respondent + income_family + work_hours,
+```{r, echo=FALSE, include=FALSE}
+contrasts(gss_numeric$marriage) <- contr.treatment(6,base = 5) # set Single as the reference
+model <- brm(formula = feelings_life ~ marriage + education + health + income_respondent + work_hours,
              data = gss_numeric,
              seed = 84)
+```
+
+
+```{r, echo=FALSE}
 summary(model)
 ```
 
 We will use a Bayesian linear regression model. The reason is that Bayesian gives a more compact confidence interval and the simple linear model does (reference).
+
+Population-Level Effects: 
+                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept             5.73      0.08     5.58     5.88 1.00     6905     3241
+marriage1             0.16      0.05     0.06     0.26 1.00     4634     3340
+marriage2             0.52      0.04     0.43     0.60 1.00     4635     3196
+marriage3             0.73      0.03     0.67     0.79 1.00     4095     3473
+marriage4            -0.10      0.07    -0.25     0.04 1.00     5385     2927
+marriage6             0.01      0.09    -0.16     0.18 1.00     6403     3262
+education            -0.06      0.01    -0.07    -0.04 1.00     7646     3334
+health                0.54      0.01     0.52     0.57 1.00     8710     3065
+income_respondent     0.04      0.01     0.02     0.06 1.00     6006     2952
+work_hours            0.02      0.02    -0.01     0.05 1.00     6828     3298
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     1.39      0.01     1.37     1.40 1.00     9193     2954
+
+Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
 
 Introduce the selected model here. It is expected that you will use some mathematical notation here. If you do please ensure that all notation is explained. You may also want to discuss any special (hypothetical) cases of your model here, as well as any caveats.  
 
@@ -191,6 +213,7 @@ ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_box
 Here you will include all results. This includes descriptive statistics, graphs, figures, tables, and model results. Please ensure that everything is well formatted and in a report style. You must also provide an explanation of the results in this section. You can overflow to an Appendix if needed. 
 
 Please ensure that everything is well labelled. So if you have multiple histograms and plots, calling them Figure 1, 2, 3, etc. and referencing them as Figure 1, Figure 2, etc. in your report will be expected. The reader should not get lost in a sea of information. Make sure to have the results be clean, well formatted and digestible.
+
 
 ## Discussion
 
