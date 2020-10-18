@@ -135,12 +135,12 @@ tibble(`Weekly Work Hour Level`=hrs_name, `Numeric Level`=rank) %>% kable(align 
 
 ```
 
-#### Potential Drawback
+### Potential Drawback
 
 For the health variable, we use the self rated health from GSS, but this does not necessarily represent the actual health condition of respondent. The respondent himself/herself might not be a physician and could have wrong understanding of his/her actual health condition.
 
 
-#### Why do we choose these variables?
+### Why do we choose these variables?
 
 ## Model
 
@@ -235,35 +235,35 @@ The distribution in Figure 1 is left skewed with a mean of 8.13, so we can say t
 
 
 ```{r, echo=FALSE}
-ggplot(gss_numeric, aes(x=education, group=education, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Education Level") + ggtitle('Figure 2')
+ggplot(gss_numeric, aes(x=education, group=education, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Education Level") + ggtitle('Figure 2') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Above is a boxplot of education level versus feeling of life. It is not obvious to see whether there is a relationship; we will need the linear model to check the correlations.
 
 
 ```{r}
-ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Self Rated Health Level") + ggtitle('Figure 3')
+ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Self Rated Health Level") + ggtitle('Figure 3') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Above is a boxplot of self rated level versus feeling of life. We can see that there is positive correlation between self rated health and feeling of life, but we still need the model to verify this.
 
 
 ```{r}
-ggplot(gss_numeric, aes(x=income_respondent, group=income_respondent, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Individual Income Level") + ggtitle('Figure 4')
+ggplot(gss_numeric, aes(x=income_respondent, group=income_respondent, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Individual Income Level") + ggtitle('Figure 4') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Above is a boxplot of respondent income versus feeling of life. Just by looking at the graph, we cannot see a relationship between these 2 variables.
 
 
 ```{r}
-ggplot(gss_numeric, aes(x=work_hours, group=work_hours, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Average Weekly Working Hour Level") + ggtitle('Figure 5')
+ggplot(gss_numeric, aes(x=work_hours, group=work_hours, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Average Weekly Working Hour Level") + ggtitle('Figure 5') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Above is a boxplot of weekly average working hours versus feeling of life. Just through the plot, we might propose that longer work hours is correlated with more satisfied feeling of life; we will need the model to verify this.
 
 
 ```{r}
-ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Marital Status") + ggtitle('Figure 6')
+ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Marital Status") + ggtitle('Figure 6') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Above is a boxplot of marital status versus feeling of life. Just by looking at the graph, we cannot clearly see a relationship between these 2 variables.
@@ -272,7 +272,7 @@ Above is a boxplot of marital status versus feeling of life. Just by looking at 
 
 
 ```{r, echo=FALSE}
-summary(model)
+model
 ```
 
 
@@ -306,7 +306,10 @@ We could further investigate why divorce has a positive impact on people's feeli
 
 
 ## References
+
 [1] Statistics Canada. 2017. General Social Survey on Family (Cycle 31).
+
 [2] Educational Reseatch Techniques. 2018. Linear Regression vs Bayesian Regression. Retrieved October 18, 2020 from https://educationalresearchtechniques.com/2017/10/18/linear-regression-vs-bayesian-regression/
+
 [3] Ilker Yildirim. 2012. Bayesian Inference: Gibbs Sampling. Retrieved October 18, 2020 from http://www.mit.edu/~ilkery/papers/GibbsSampling.pdf
 
