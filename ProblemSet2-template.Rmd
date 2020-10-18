@@ -142,7 +142,7 @@ tibble(`Self Work Hour Level`=hrs_name, `Numeric Level`=rank)
 ```
 
 
-
+#### Why do we choose these variables?
 
 ## Model
 ```{r, echo=FALSE, include=FALSE}
@@ -176,11 +176,29 @@ Family Specific Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
 sigma     1.39      0.01     1.37     1.40 1.00     9193     2954
 
+
 Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).
 
 Introduce the selected model here. It is expected that you will use some mathematical notation here. If you do please ensure that all notation is explained. You may also want to discuss any special (hypothetical) cases of your model here, as well as any caveats.  
+
+### Marital Status
+
+
+### Education
+
+
+### Health
+
+
+### Income
+
+
+### Weekily work hours
+
+
+
 
 ## Results
 
