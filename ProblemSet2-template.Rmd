@@ -169,6 +169,8 @@ hist(gss_numeric$feelings_life)
 ```
 
 ```{r, echo=FALSE}
+ggplot(gss_numeric, aes(x=health, y=feelings_life)) + geom_point()
+
 ggplot(gss_numeric, aes(x=education, group=education, y=feelings_life)) + geom_boxplot()
 
 ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot()
