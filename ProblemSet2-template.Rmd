@@ -91,23 +91,26 @@ gss_numeric = data.frame(feelings_life = gss_data$feelings_life, marriage = gss_
 
 We first obtain the GSS data from the CHASS website ('AAIpsmGG.csv'), and clean the file with code from 'gss_cleaning.R' (written by professor Rohan Alexander and Sam Caetano) to make the raw data more interpreteble. The data file after cleaning is 'gss.csv'
 
-Then, we select our interest variables--marital status, education level, individual income, family income, self rated health, average working hours, and one's feeling of life--from the cleaned data, and we remove every case with NA or "Don't know" responses from the dataset. We will briefly explain each variable in the following section.
+Then, we select our interest variables--marital status, education level, individual income, family income, self rated health, average working hours, and one's feeling of life--from the cleaned data, and we remove every case with NA or "Don't know" responses from the dataset. For the convenience of modelling, we will convert some categorical data to numeric variables. We will briefly explain each variable in the following section.
 
-### Variable Explanation
+### Variable Explanations
 
 #### Response Variable
+
 
 __Feeling of life__ (code in raw data:SLM_01, name in 'gss.csv':feelings_life) is a continuous numeric data ranging from 0 to 10 that indicates the respondent's feeling of life as a whole. 0 means very dissatisfied and 10 means very satisfied (reference from data).
 
 #### Explanatory Variables
+
 
 __Marital status__ (code in raw data:MARSTAT, name in 'gss.csv':marital_status) is a categorical data indicating whether the respondent is:
 ```{r, echo=FALSE}
 group_by(gss_numeric, marriage) %>% summarise(.groups = 'drop') %>%tibble()
 ```
 
+We will not convert this data to numeric, since it is not intuitive to separate marital status into different levels. It is not reasonable to say that married is better than single, so we will leave this variable as categorical.
 
-__Education level__ (code in raw data:EHG3_01B, name in 'gss.csv':education) is a categorical data that indicates the highest education the respondent acquires. For the convenience of modeling, we will transform the data into continuous numeric variable. The transformed variable will range from 1-7, representing from the lowest to the highest education level (we use the order of education level from the original GSS). Below is a reference table:
+__Education level__ (code in raw data:EHG3_01B, name in 'gss.csv':education) is a categorical data that indicates the highest education the respondent acquires. Because the question asks for the highest education level achieved, it is reasonable to use numeric data to represent different levels of education. The variable after transformation will range from 1-7, representing from the lowest to the highest education level (we use the order of education level from the original GSS). Below is a reference table:
 ```{r, echo=FALSE}
 edu_name = c("Less than high school diploma or its equivalent","High school diploma or a high school equivalency certificate","Trade certificate or diploma","College, CEGEP or other non-university certificate or diploma (other than trades certificates or diplomas)","University certificate or diploma below the bachelor's level","Bachelor's degree (e.g. B.A., B.Sc., LL.B.)","University certificate, diploma or degree above the bachelor’s level")
 rank = group_by(gss_numeric, education) %>% summarise(.groups = 'drop')
@@ -116,7 +119,7 @@ tibble(`Education Level`=edu_name, `Numeric Rank`=rank)
 ```
 
 
-Individual income (code in raw data:TTLINCG2, name in 'gss.csv':income_respondent) and family income (code in raw data:FAMINCG2, name in 'gss.csv':income_family) are both categorical data. Individual income indicates the income level of respondent, while family income indicates the total income of respondent's family. Both incomes are before tax and exclude any capital gains or losses. We will transform these two variables to numeric data ranging from 1 to 7 which represent the income level. Below is a reference table shared by both family and respondent income:
+__Individual income__ (code in raw data:TTLINCG2, name in 'gss.csv':income_respondent) and __family income__ (code in raw data:FAMINCG2, name in 'gss.csv':income_family) are both categorical data. Individual income indicates the income level of respondent, while family income indicates the total income of respondent's family. Both incomes are before tax and exclude any capital gains or losses. Income is inherently a numeric data, so we will transform these two variables to numeric data ranging from 1 to 7 which represent the income level. Below is a reference table shared by both family and respondent income:
 ```{r, echo=FALSE}
 inc_name = c("Less than $25,000","$25,000 to $49,999","$50,000 to $74,999","$75,000 to $99,999","$100,000 to $ 124,999","$125,000 and more")
 rank = group_by(gss_numeric, income_respondent) %>% summarise(.groups = 'drop')
@@ -125,7 +128,7 @@ tibble(`Income Level`=inc_name, `Numeric Level`=rank)
 ```
 
 
-Self rated health (code in raw data:SRH_110, name in 'gss.csv':self_rated_health) is a categorical data that indicates what the respondent think his/her health level is. We will also transform this variable to numeric data with range from 1-5. Below is the reference table:
+__Self rated health__ (code in raw data:SRH_110, name in 'gss.csv':self_rated_health) is a categorical data that indicates what the respondent think his/her health level is. We will also transform this variable to numeric data with range from 1-5. Below is the reference table:
 ```{r, echo=FALSE}
 health_name = c("Poor","Fair","Good","Very good","Execellent")
 rank = group_by(gss_numeric, health) %>% summarise(.groups = 'drop')
@@ -134,7 +137,7 @@ tibble(`Self Rated Health Level`=health_name, `Numeric Level`=rank)
 ```
 
 
-Average working hours (code in raw data:UHW_16GR, name in 'gss.csv':average_hours_worked) is a categorical data that indicates how many hours the respondent works a week on average. We will convert the variable to numeric with range from 1-5. Below is the reference table:
+__Average working hours__ (code in raw data:UHW_16GR, name in 'gss.csv':average_hours_worked) is a categorical data that indicates how many hours the respondent works a week on average. We will convert the variable to numeric with range from 1-5. Below is the reference table:
 ```{r, echo=FALSE}
 hrs_name = c("0 hour","0.1 to 29.9 hours","30.0 to 40.0 hours","40.1 to 50.0 hours","50.1 hours and more")
 rank = group_by(gss_numeric, work_hours) %>% summarise(.groups = 'drop')
@@ -148,6 +151,7 @@ tibble(`Self Work Hour Level`=hrs_name, `Numeric Level`=rank)
 
 ## Model
 ```{r, echo=FALSE}
+constrasts
 model <- brm(formula = feelings_life ~ marriage + education + health + income_respondent + income_family + work_hours,
              data = gss_numeric,
              seed = 84)
@@ -162,6 +166,21 @@ Introduce the selected model here. It is expected that you will use some mathema
 
 ```{r, echo=FALSE}
 hist(gss_numeric$feelings_life)
+```
+
+```{r, echo=FALSE}
+ggplot(gss_numeric, aes(x=education, group=education, y=feelings_life)) + geom_boxplot()
+
+ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot()
+
+ggplot(gss_numeric, aes(x=income_respondent, group=income_respondent, y=feelings_life)) + geom_boxplot()
+
+ggplot(gss_numeric, aes(x=income_family, group=income_family, y=feelings_life)) + geom_boxplot()
+
+ggplot(gss_numeric, aes(x=work_hours, group=work_hours, y=feelings_life)) + geom_boxplot()
+
+ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_boxplot()
+
 ```
 
 Here you will include all results. This includes descriptive statistics, graphs, figures, tables, and model results. Please ensure that everything is well formatted and in a report style. You must also provide an explanation of the results in this section. You can overflow to an Appendix if needed. 
