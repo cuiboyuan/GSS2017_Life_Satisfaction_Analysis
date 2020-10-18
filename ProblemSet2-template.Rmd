@@ -27,7 +27,7 @@ Here is where you should give insight into the setting and introduce the goal of
 
 Starting from 1985, Statistics Canada conducted General Social Survey (GSS) every year to collect cross-sectional data on non-institutionalized Canadian citizens over 15 years old to address and discover new  social issues. One of the primary objective of GSS is to monitor factors that affect Canadians' well-beings of that specific year (reference to user guide). We believe that an important indicator of a person's well-being is his/her own attitude towards life. If we are aware of what aspects promote or damage one's feeling of life, the government and any social agencies will have better insights on what they should do to make the society better off. We believe it is important to know which factors are influential on people's feeling of life as a whole, and we may find some unexpected discoveries.
 
-The following sections will specifically explore the impact of marital status, education level, individual income, family income, self rated health, and average working hours on one's feeling of life, and we will apply a Bayesian linear model to analyze the relationship.
+The following sections will specifically explore the impact of marital status, education level, individual income, self rated health, and average working hours on one's feeling of life, and we will apply a Bayesian linear model to analyze the relationship.
 
 
  1) Income respondent (ttlincg2)  VS  Education (ehg3_01b).    2) Income respondent (ttlincg2) VS  Feelings about life as a whole (slm_01). 
@@ -39,7 +39,7 @@ The following sections will specifically explore the impact of marital status, e
 Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.
 ```{r, echo=FALSE}
 gss <- read_csv("gss.csv")
-gss_data <-  select(gss, feelings_life, marital_status, education, average_hours_worked, self_rated_health, income_family, income_respondent) %>% na.omit()
+gss_data <-  select(gss, feelings_life, marital_status, education, average_hours_worked, self_rated_health, income_respondent) %>% na.omit()
 
 group_by(gss_data, education) %>% summarise()
 
@@ -57,12 +57,7 @@ work_hours_numeric = case_when(gss_data$ average_hours_worked=="50.1 hours and m
                                gss_data$ average_hours_worked=="0.1 to 29.9 hours" ~ 2,
                                gss_data$ average_hours_worked=="0 hour" ~ 1)
 
-Incomefam_numeric = case_when(gss_data$ income_family=="$125,000 and more" ~ 6,
-                              gss_data$ income_family=="$100,000 to $ 124,999" ~ 5,
-                              gss_data$ income_family=="$75,000 to $99,999" ~ 4,
-                              gss_data$ income_family=="$50,000 to $74,999" ~ 3,
-                              gss_data$ income_family=="$25,000 to $49,999" ~ 2,
-                              gss_data$ income_family=="Less than $25,000" ~ 1)
+
                               
 IncomeRes_numeric = case_when(gss_data$income_respondent=="$125,000 and more" ~ 6,
           gss_data$income_respondent=="$100,000 to $ 124,999" ~ 5,
@@ -81,7 +76,7 @@ edu = case_when(gss_data$education=="University certificate, diploma or degree a
           )
 
 gss_numeric = data.frame(feelings_life = gss_data$feelings_life, marriage = factor(gss_data$marital_status), education=edu, health=health_numeric, income_respondent=IncomeRes_numeric,
-                         income_family=Incomefam_numeric, work_hours=work_hours_numeric) %>% na.omit()
+                         work_hours=work_hours_numeric) %>% na.omit()
 
 ```
 
@@ -202,7 +197,7 @@ ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot
 
 ggplot(gss_numeric, aes(x=income_respondent, group=income_respondent, y=feelings_life)) + geom_boxplot()
 
-ggplot(gss_numeric, aes(x=income_family, group=income_family, y=feelings_life)) + geom_boxplot()
+
 
 ggplot(gss_numeric, aes(x=work_hours, group=work_hours, y=feelings_life)) + geom_boxplot()
 
