@@ -277,3 +277,6 @@ We could further investigate why marital status of divorce has a positive impact
 
 [3] Ilker Yildirim. 2012. Bayesian Inference: Gibbs Sampling. Retrieved October 18, 2020 from http://www.mit.edu/~ilkery/papers/GibbsSampling.pdf
 
+## Appendix
+
+Github repository of this report: https://github.com/cuiboyuan/GSS2017_Life_Satisfaction_Analysis
