@@ -276,9 +276,16 @@ model
 ```
 
 
+
+
 (Here you will include all results. This includes descriptive statistics, graphs, figures, tables, and model results. Please ensure that everything is well formatted and in a report style. You must also provide an explanation of the results in this section. You can overflow to an Appendix if needed. 
 
 Please ensure that everything is well labelled. So if you have multiple histograms and plots, calling them Figure 1, 2, 3, etc. and referencing them as Figure 1, Figure 2, etc. in your report will be expected. The reader should not get lost in a sea of information. Make sure to have the results be clean, well formatted and digestible.)
+
+
+
+
+ From the results of Bayesian linear regression, firstly we could conclude if there is any correlation between response variable and each independent variable. The null hypothesis here is that there is no relationship between feelings about life and each factor. If the value of the null hypothesis is in the 95% confidence interval, then the we will not have evidence to reject the null hypothesis; when the confidence interval does not contain the null hypothesis, we could reject the null hypothesis. In other words, the 95% confidence interval for marriage status which are separated and windowed, and for work hours do contain the value of the null hypothesis which is 0. Hence we could conclude that the feelings about life is not correlated with each of these three variables. Secondly, now we could analyze the effects of predictor variables on the outcome variable. It is clear that comparing to the participants who are single, those participantse who got divorced, living common-law and married have better feelings about life, with 0.16 units, 0.52 units, 0.73 units increment respectively. On the contrary, the level of education has a negative impact on the feelings about life because when the educational level increases from lower level to nearest higher level(e.g. the changes from "Less than high school diploma or its equivalent" to "High school diploma or a high school equivalency certificate"), the feelings about life decreases by 0.06 units. Moreover, respondents are 0.54 units more satisfied with life as their health codition moves forward to the nearest better level(such as "good" to "very good"), and the rise from lower income range to the nearest higher income range grows their life satisfaction by 0.04 units.
 
 
 ## Discussion
