@@ -175,62 +175,71 @@ model <- brm(formula = feelings_life ~ marriage + education + health + income_re
 
 ## Results
 
-### Data Overview
-
-Below is a histogram that gives a brief overview of Canadians' feelings of life as a whole in 2017:
 
 ```{r, echo=FALSE}
 hist(gss_numeric$feelings_life, xlab = 'Feelings of life', main = 'Figure 1')
 
 ```
 
-The distribution in Figure 1 is left skewed with a mean of 8.13, so we can say that the overall well-being of Canada in 2017 is quite good.
+
 
 
 ```{r, echo=FALSE}
 ggplot(gss_numeric, aes(x=education, group=education, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Education Level") + ggtitle('Figure 2') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Above is a boxplot of education level versus feeling of life. It is not obvious to see whether there is a relationship; we will need the linear model to check the correlations.
+
 
 
 ```{r}
 ggplot(gss_numeric, aes(x=health, group=health, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Self Rated Health Level") + ggtitle('Figure 3') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Above is a boxplot of self rated level versus feeling of life. We can see that there is positive correlation between self rated health and feeling of life, but we still need the model to verify this.
 
 
 ```{r}
 ggplot(gss_numeric, aes(x=income_respondent, group=income_respondent, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Individual Income Level") + ggtitle('Figure 4') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Above is a boxplot of respondent income versus feeling of life. Just by looking at the graph, we cannot see a relationship between these 2 variables.
+
 
 
 ```{r}
 ggplot(gss_numeric, aes(x=work_hours, group=work_hours, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Average Weekly Working Hour Level") + ggtitle('Figure 5') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Above is a boxplot of weekly average working hours versus feeling of life. Just through the plot, we might propose that longer work hours is correlated with more satisfied feeling of life; we will need the model to verify this.
+
 
 
 ```{r}
 ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_boxplot() + ylab("Feelings of Life") + xlab("Marital Status") + ggtitle('Figure 6') + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Above is a boxplot of marital status versus feeling of life. Just by looking at the graph, we cannot clearly see a relationship between these 2 variables.
 
+```{r, echo=FALSE}
+fit = summary(model) %>% unclass()
+fit$fixed %>% data.frame() %>% select(-Bulk_ESS, -Tail_ESS) %>% kable(caption="Bayesian Linear Model",align = 'lccrr')
+```
+
+## Discussion
+
+### Data Overview
+
+Figure 1 is a histogram that gives a brief overview of Canadians' feelings of life as a whole in 2017. The distribution is left skewed with a mean of 8.13, so we can say that the overall well-being of Canada in 2017 is quite good.
+
+Figure 2 is a boxplot of education level versus feeling of life. It is not obvious to see whether there is a relationship; we will need the linear model to check the correlations.
+
+Figure 3 is a boxplot of self rated level versus feeling of life. We can see that there is positive correlation between self rated health and feeling of life, but we still need the model to verify this.
+
+Figure 4 is a boxplot of respondent income versus feeling of life. Just by looking at the graph, we cannot see a relationship between these 2 variables.
+
+Figure 5 is a boxplot of weekly average working hours versus feeling of life. Just through the plot, we might propose that longer work hours is correlated with more satisfied feeling of life; we will need the model to verify this.
+
+Figure 6 is a boxplot of marital status versus feeling of life. Just by looking at the graph, we cannot clearly see a relationship between these 2 variables.
 
 ### Regression Result
 
-Below is a summary of our result Bayesian linear model:
-
-```{r, echo=FALSE}
-model
-```
-
-  We will focus on the table under 'Population-Level Effects'.
+  Table 6 is a summary of our result Bayesian linear model:
 
   From the results of Bayesian linear regression, firstly we will check whether there is any correlation between response variable and each independent variable. We will use hypothesis testing. The null hypothesis here is that there is no relationship between feelings about life and each factor. If the hypothesis value of the null, which is 0, is in the 95% confidence interval, then the we will have no evidence to reject the null hypothesis; if the confidence interval does not contain the null hypothesis, we could reject the null hypothesis.
   
@@ -240,7 +249,7 @@ model
   
   Secondly, if the null hypothesis is rejected, we will analyze the effects of predictor variables on the outcome variable by checking the estimated values of $\beta$.
   
-  The estimated value of $\beta$ can be found under column 'Estimates', where each value, from top to bottom, represents estimated value of $\beta_0,..\beta_9$, respectively.
+  The estimated value of $\beta$ can be found under column 'Estimate', where each value, from top to bottom, represents estimated value of $\beta_0,..\beta_9$, respectively.
   
   From the model, it is clear that comparing to participants who are single, those participants who got divorced, living common-law and married have better feelings about life, with 0.16 units, 0.52 units, 0.73 units increment respectively. Moreover, respondents are 0.54 units more satisfied with life as their health condition moves forward to the nearest better level(such as from "Good" to "Very good", reference from Table 4), and the rise from lower income range to the nearest higher income range (e.g. "Less than \$25,000" to "\$25,000 to \$49,999", reference from Table 3) grows their life satisfaction by 0.04 units.
   
@@ -248,16 +257,15 @@ model
   
   The intercept will have no practical meaning here, because all variable ranges do not contain 0.
 
+### Result Discussion
 
-## Discussion
+  As we can see from our model, a good health condition greatly promotes personal well-beings in Canada, and it has greater positive impact on well-beings than the individual income has. This result implies that in order to increase the happiness of the society, the government should focus more on public health policies and personal medical support, etc.
 
-As we can see from our model, a good health condition greatly promotes personal well-beings in Canada, and it has greater positive impact on well-beings than the individual income has. This result implies that in order to increase the happiness of the society, the government should focus more on public health policies and personal medical support, etc.
+  Additionally, from the model, we find out that getting married and living common-law also contributes largely to Canadian's feeling of life. This is intuitive since we expect people to be happier when they are in a relationship. This result may imply that the government should improve the common law or simplify the process of marriage registration.
 
-Additionally, from the model, we find out that getting married and living common-law also contributes largely to Canadian's feeling of life. This is intuitive since we expect people to be happier when they are in a relationship. This result may imply that the government should improve the common law or simplify the process of marriage registration.
+  We also discover from the model that higher education level has a tiny negative impact on people's feeling of life. A possible explanation is that as people obtain more knowledge, they might worried about more things. For example, a construction worker may feel very satisfied with his/her job while an economic professor is constantly worrying about an upcoming recession. This does not necessarily mean that government should discourage people from increasing their education level. In fact, a higher education level might relate to a higher income, and by our model, income has a positive influence on the well-being.
 
-We also discover from the model that higher education level has a tiny negative impact on people's feeling of life. A possible explanation is that as people obtain more knowledge, they might worried about more things. For example, a construction worker may feel very satisfied with his/her job while an economic professor is constantly worrying about an upcoming recession. This does not necessarily mean that government should discourage people from increasing their education level. In fact, a higher education level might relate to a higher income, and by our model, income has a positive influence on the well-being.
-
-One interesting discovery is that, comparing to single respondents, divorced people have a more positive feeling of life. Intuitively, we often relate divorce to grief and distress, but the data from GSS tells a different story. Based on this result, the government may need to change its view on divorce, and consider to modify terms in the marriage laws to address this social issue.
+  One interesting discovery is that, comparing to single respondents, divorced people have a more positive feeling of life. Intuitively, we often relate divorce to grief and distress, but the data from GSS tells a different story. Based on this result, the government may need to change its view on divorce, and consider to modify terms in the marriage laws to address this social issue.
 
 # Weaknesses
 
