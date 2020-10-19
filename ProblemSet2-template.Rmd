@@ -142,6 +142,8 @@ For the health variable, we use the self rated health from GSS, but this does no
 
 ### Why do we choose these variables?
 
+The feelings about life or life satisfaction has been a popular topic in the society, so we think it is a profound topic to be analyzed and discussed. Now we try to figure out some key factors that might affect people's feelings about life and discover how exactly they would change the feelings. Therefore, we chose feelings about life to be the response variable, then we browsed the data set and we found some potential explanatory variables based on our knowledge. For example, people usually will be more satisfied with their life when they are in a better health condition; also the people who are single might have different feelings about life from the people who are married. Because life consists of many aspects so we chose five different key factors from five different aspects, and the results would be relatively representative and significant. 
+
 ## Model
 
 
