@@ -7,3 +7,5 @@ The What_Improves_Feeling_of_Life.pdf file is our final report on the analysis g
 AAIpsmGG.csv is the raw data file of 2017 GSS extracted from CHASS website.
 
 The gss_cleaning.R file, written by professor Rohan Alexandar and Sam Cateno, is used to clean the raw data of GSS; both gss_labels.txt and gss_dict.txt are used by this file. The gss.csv is the output data file.
+
+Note: base off the GSS data license, it is not recommended to upload the data to Github, so we have removed the content of AAIpsmGG.csv and gss.csv. However, to reproduce the report from Rmd file, you can download the GSS 2017 data from CHASS website http://dc.chass.utoronto.ca/myaccess.html yourself.
