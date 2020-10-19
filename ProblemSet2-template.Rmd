@@ -1,5 +1,5 @@
 ---
-title: "Title of Your Report"
+title: "What Improves People's Feeling of Life?"
 author: "Boyuan Cui, Zhaocheng Li"
 date: "Oct 19, 2020"
 output: pdf_document
@@ -16,22 +16,17 @@ library(knitr)
 
 ## Abstract
 
-(Here is where you give a brief (one paragraph overview of your entire paper). This should include some background/introduction, some methodology, results and conclusions.)
-
-The report explores the impact of marital status, education level, individual income, self rated health, and average working hours on the well-being of individuals based on the 2017 General Social Survey data of Canada. The report analyzes the correlation through Bayesian linear model and uses Gibbs sampling to estimate the parameters of the model. We discovered that health, income, and certain marital status (married, living common law, and divorced) have a positive influence on the well-being, while education has a negative impact. Working hours and other marital status (widowed and separated) has no significant influence on the well-being.
+The report gives a brief analysis on what factors improve people's life satisfaction. Specifically, we explored the impact of marital status, education level, individual income, self rated health, and average working hours on the well-being of individuals based on the 2017 General Social Survey data of Canada. The report analyzes the correlation through Bayesian linear regression and uses Gibbs sampling to estimate the model parameters. We discovered that health, income, and certain marital status (married, living common law, and divorced) have a positive influence on the well-being, while education has a negative impact. Working hours and other marital status (widowed and separated) has no significant influence on the well-being.
 
 ## Introduction
 
-(Here is where you should give insight into the setting and introduce the goal of the analysis. Here you can introduce ideas and basic concepts regarding the study setting and the potential model. Again, this is the introduction, so you should be explaining the importance of the work that is ahead and hopefully build some suspense for the reader. You can also highlight what will be included in the subsequent sections.)
-
-Starting from 1985, Statistics Canada conducted General Social Survey (GSS) every year to collect cross-sectional data on non-institutionalized Canadian citizens over 15 years old to address and discover new  social issues. One of the primary objective of GSS is to monitor factors that affect Canadians' well-beings of that specific year (reference to user guide). We believe that an important indicator of a person's well-being is his/her own attitude towards life. If we are aware of what aspects promote or damage one's feeling of life, the government and any social agencies will have better insights on what they should do to make the society better off. We believe it is important to know which factors are influential on people's feeling of life as a whole, and we may find some unexpected discoveries.
+Starting from 1985, Statistics Canada has conducted General Social Survey (GSS) every year to collect cross-sectional data on non-institutionalized Canadian citizens over 15 years old to address and discover new  social issues. One of the primary objective of GSS is to monitor factors that affect Canadians' well-beings of that specific year [1]. We believe that an important indicator of a person's well-being is his/her own attitude towards life. If we are aware of what aspects promote or damage one's feeling of life, the government and any social agencies will have better insights on what they should do to make the society better off. We believe it is important to know which factors are influential on people's feeling of life as a whole, and we may find some unexpected discoveries.
 
 The following sections will specifically explore the impact of marital status, education level, individual income, self rated health, and average working hours on one's feeling of life, and we will apply a Bayesian linear model to analyze the relationship.
 
 
 ## Data
 
-(Introduce the data, explain why it was selected. Make sure to comment on important features and highlight any potential drawbacks to the data.)
 ```{r, echo=FALSE, include=FALSE}
 gss <- read_csv("gss.csv")
 gss_data <-  select(gss, feelings_life, marital_status, education, average_hours_worked, self_rated_health, income_respondent) %>% na.omit()
@@ -82,7 +77,7 @@ We first obtain the GSS data file from the CHASS website ('AAIpsmGG.csv'), and c
 
 Then, we select our interest variables--marital status, education level, individual income, family income, self rated health, average working hours, and one's feeling of life--from the cleaned data, and we remove every case with NA or "Don't know" responses from the dataset. For the convenience of modeling, we will convert some categorical data to numeric variables. We will briefly explain each variable in the following section.
 
-Below is an overview of the final dataset:
+Below is a glimpse of the final dataset:
 ```{r, echo=FALSE}
 head(gss_numeric) %>% tibble() %>% kable(align = 'lccrr', caption='Glimpse of Dataset')
 ```
@@ -91,13 +86,7 @@ head(gss_numeric) %>% tibble() %>% kable(align = 'lccrr', caption='Glimpse of Da
 
 __Feeling of life__ (code in raw data: SLM_01, name in 'gss.csv': feelings_life) is a continuous numeric data ranging from 0 to 10 that indicates the respondent's feeling of life as a whole. 0 means very dissatisfied and 10 means very satisfied (reference from data).
 
-__Marital status__ (code in raw data: MARSTAT, name in 'gss.csv': marital_status) is a categorical data indicating whether the respondent is divorced, living common-law, married, separated, single, or widowed [1].
-
-We will not convert this data to numeric, since it is not intuitive to differentiate marital status into different levels. It is not reasonable to say that married is better than single, or vice versa, so we will leave this variable as categorical. But for concision purpose, we will give each marital status a code number for future reference:
-
-```{r, echo=FALSE}
-tibble('Marital status'=levels(gss_numeric$marriage),'Reference Code'=c(1:6)) %>% kable(align = 'lccrr', caption='Marital Status Reference')
-```
+__Marital status__ (code in raw data: MARSTAT, name in 'gss.csv': marital_status) is a categorical data indicating whether the respondent is divorced, living common-law, married, separated, single, or widowed [1]. We will not convert this data to numeric, since it is not intuitive to differentiate marital status into different levels.
 
 __Education level__ (code in raw data: EHG3_01B, name in 'gss.csv': education) is a categorical data that indicates the highest education the respondent acquires [1]. Because the question asks for the highest education level achieved, it is reasonable to use numeric data to represent different levels of education. The variable after transformation will range from 1-7, representing from the lowest to the highest education level (we use the order of education level from the original GSS). Below is a reference table:
 ```{r, echo=FALSE}
@@ -135,18 +124,17 @@ tibble(`Weekly Work Hour Level`=hrs_name, `Numeric Level`=rank) %>% kable(align 
 
 ```
 
+
+### Why do we choose these variables?
+
+The feelings about life or life satisfaction has been a popular topic in the society and should be a major concern of the governments, so we think it is a profound topic to be analyzed and discussed. We try to figure out some key factors that might affect people's feelings about life and discover how exactly they would change the feelings. Therefore, we choose feelings about life to be the response variable, then we browsed the data set and we found some potential explanatory variables based on our knowledge. For example, people usually will be more satisfied with their life when they are in a better health condition; also the people who are single might have different feelings about life from the people who are married. Because life consists of many aspects so we chose five different key factors from five different aspects, and the results would be relatively representative and significant. 
+
+
 ### Potential Drawback
 
 For the health variable, we use the self rated health from GSS, but this does not necessarily represent the actual health condition of respondent. The respondent himself/herself might not be a physician and could have wrong understanding of his/her actual health condition.
 
-
-### Why do we choose these variables?
-
-The feelings about life or life satisfaction has been a popular topic in the society, so we think it is a profound topic to be analyzed and discussed. Now we try to figure out some key factors that might affect people's feelings about life and discover how exactly they would change the feelings. Therefore, we chose feelings about life to be the response variable, then we browsed the data set and we found some potential explanatory variables based on our knowledge. For example, people usually will be more satisfied with their life when they are in a better health condition; also the people who are single might have different feelings about life from the people who are married. Because life consists of many aspects so we chose five different key factors from five different aspects, and the results would be relatively representative and significant. 
-
 ## Model
-
-
 
 We will use a Bayesian linear model.
 
@@ -184,47 +172,10 @@ We will use the technique of Gibbs Sampling to estimate our coefficients. Since 
 model <- brm(formula = feelings_life ~ marriage + education + health + income_respondent + work_hours, data = gss_numeric, seed = 84)
 ```
 
-Population-Level Effects: 
-                         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept                    5.73      0.08     5.58     5.88 1.00     6905     3241
-marriageDivorced             0.16      0.05     0.06     0.26 1.00     4634     3340
-marriageLivingcommonMlaw     0.52      0.04     0.43     0.60 1.00     4635     3196
-marriageMarried              0.73      0.03     0.67     0.79 1.00     4095     3473
-marriageSeparated           -0.10      0.07    -0.25     0.04 1.00     5385     2927
-marriageWidowed              0.01      0.09    -0.16     0.18 1.00     6403     3262
-education                   -0.06      0.01    -0.07    -0.04 1.00     7646     3334
-health                       0.54      0.01     0.52     0.57 1.00     8710     3065
-income_respondent            0.04      0.01     0.02     0.06 1.00     6006     2952
-work_hours                   0.02      0.02    -0.01     0.05 1.00     6828     3298
-
-Family Specific Parameters: 
-      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     1.39      0.01     1.37     1.40 1.00     9193     2954
-
-Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
-and Tail_ESS are effective sample size measures, and Rhat is the potential
-scale reduction factor on split chains (at convergence, Rhat = 1).
-
-(Introduce the selected model here. It is expected that you will use some mathematical notation here. If you do please ensure that all notation is explained. You may also want to discuss any special (hypothetical) cases of your model here, as well as any caveats.)
-
-### Marital Status
-
-
-### Education
-
-
-### Health
-
-
-### Income
-
-
-### Weekily work hours
-
-
-
 
 ## Results
+
+### Data Overview
 
 Below is a histogram that gives a brief overview of Canadians' feelings of life as a whole in 2017:
 
@@ -271,27 +222,34 @@ ggplot(gss_numeric, aes(x=marriage, group=marriage, y=feelings_life)) + geom_box
 Above is a boxplot of marital status versus feeling of life. Just by looking at the graph, we cannot clearly see a relationship between these 2 variables.
 
 
+### Regression Result
 
+Below is a summary of our result Bayesian linear model:
 
 ```{r, echo=FALSE}
 model
 ```
 
+  We will focus on the table under 'Population-Level Effects'.
 
-
-
-(Here you will include all results. This includes descriptive statistics, graphs, figures, tables, and model results. Please ensure that everything is well formatted and in a report style. You must also provide an explanation of the results in this section. You can overflow to an Appendix if needed. 
-
-Please ensure that everything is well labelled. So if you have multiple histograms and plots, calling them Figure 1, 2, 3, etc. and referencing them as Figure 1, Figure 2, etc. in your report will be expected. The reader should not get lost in a sea of information. Make sure to have the results be clean, well formatted and digestible.)
-
-
-
-  From the results of Bayesian linear regression, firstly we could conclude if there is any correlation between response variable and each independent variable. The null hypothesis here is that there is no relationship between feelings about life and each factor. If the value of the null hypothesis is in the 95% confidence interval, then the we will not have evidence to reject the null hypothesis; when the confidence interval does not contain the null hypothesis, we could reject the null hypothesis. In other words, the 95% confidence interval for marriage status which are separated and windowed, and for work hours do contain the value of the null hypothesis which is 0. Hence we could conclude that the feelings about life is not correlated with each of these three variables. Secondly, now we could analyze the effects of predictor variables on the outcome variable. It is clear that comparing to the participants who are single, those participantse who got divorced, living common-law and married have better feelings about life, with 0.16 units, 0.52 units, 0.73 units increment respectively. On the contrary, the level of education has a negative impact on the feelings about life because when the educational level increases from lower level to nearest higher level(e.g. the changes from "Less than high school diploma or its equivalent" to "High school diploma or a high school equivalency certificate"), the feelings about life decreases by 0.06 units. Moreover, respondents are 0.54 units more satisfied with life as their health codition moves forward to the nearest better level(such as "good" to "very good"), and the rise from lower income range to the nearest higher income range grows their life satisfaction by 0.04 units.
+  From the results of Bayesian linear regression, firstly we will check whether there is any correlation between response variable and each independent variable. We will use hypothesis testing. The null hypothesis here is that there is no relationship between feelings about life and each factor. If the hypothesis value of the null, which is 0, is in the 95% confidence interval, then the we will have no evidence to reject the null hypothesis; if the confidence interval does not contain the null hypothesis, we could reject the null hypothesis.
+  
+  The lower and higher bound of 95% confidence interval can be found under the 'l-95% CI' column and 'u-95% CI' column, respectively.
+  
+  As we can see, the 95% confidence intervals for marital status of separated ($[-0.25, 0.04]$), widowed ($[-0.16,0.18]$) and work hours ($[-0.01,0.05]$) do contain 0. Hence we could conclude that the feelings about life does not correlate with each of these three variables.
+  
+  Secondly, if the null hypothesis is rejected, we will analyze the effects of predictor variables on the outcome variable by checking the estimated values of $\beta$.
+  
+  The estimated value of $\beta$ can be found under column 'Estimates', where each value, from top to bottom, represents estimated value of $\beta_0,..\beta_9$, respectively.
+  
+  From the model, it is clear that comparing to participants who are single, those participants who got divorced, living common-law and married have better feelings about life, with 0.16 units, 0.52 units, 0.73 units increment respectively. Moreover, respondents are 0.54 units more satisfied with life as their health condition moves forward to the nearest better level(such as from "Good" to "Very good", reference from Table 4), and the rise from lower income range to the nearest higher income range (e.g. "Less than \$25,000" to "\$25,000 to \$49,999", reference from Table 3) grows their life satisfaction by 0.04 units.
+  
+  On the contrary, the level of education has a negative impact on the feelings about life. From the model, we discovered that if the educational level increases from lower level to the nearest higher level(e.g. the changes from "Less than high school diploma or its equivalent" to "High school diploma or a high school equivalency certificate", reference from Table 2), the feelings about life is predicted to decrease by 0.06 units. 
+  
+  The intercept will have no practical meaning here, because all variable ranges do not contain 0.
 
 
 ## Discussion
-
-(Here you will discuss conclusions drawn from the results and comment on how it relates to the original goal of the study (which was specified in the Introduction).)
 
 As we can see from our model, a good health condition greatly promotes personal well-beings in Canada, and it has greater positive impact on well-beings than the individual income has. This result implies that in order to increase the happiness of the society, the government should focus more on public health policies and personal medical support, etc.
 
@@ -308,9 +266,7 @@ When we fit our model, we assume that all variables are independent, but that is
 
 # Next Steps
 
-(Here you discuss subsequent work to be done after this report. This can include next steps in terms of statistical analysis (perhaps there is a more efficient algorithm available, or perhaps there is a caveat in the data that would allow for some new technique). Future steps should also be specified in terms of the study setting (eg. including a follow-up survey on something, or a subsequent study that would complement the conclusions of your report).)
-
-We could further investigate why divorce has a positive impact on people's feeling of life, and it may require another linear model to discover potential reasons.
+We could further investigate why marital status of divorce has a positive impact on people's feeling of life, and it may require another linear model to discover potential reasons.
 
 
 ## References
